@@ -586,6 +586,7 @@ if __name__ == "__main__":
     #df['VPD'] = qair_to_vpd(df['Qair'], df['Tair'], df['Psurf'])
 
     df['VPD'] = RH_to_VPD(df['rH'], df['Tair'])
+    df['RH'] = df['rH']
 
     # Add LW
     df['Lwdown'] = estimate_lwdown(df.Tair.values+deg_2_kelvin,
