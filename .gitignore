@@ -1,0 +1,22 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.nc
+*.csv
+*.pdf
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.pyc
+
+misc/*
+raw_data/*
+data/*.csv
+data/*.nc
+
+.DS_Store
