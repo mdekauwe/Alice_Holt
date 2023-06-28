@@ -440,6 +440,7 @@ if __name__ == "__main__":
     df = df.rename(columns={'Rn_Avg': 'Rnet'})
     df = df.rename(columns={'WS_ms_Avg': 'Wind'})
 
+    print(df.Tair.max()-273.15)
     ###
     # Add in the global CO2
     ###
