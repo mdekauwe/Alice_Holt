@@ -393,12 +393,36 @@ def simple_Rnet(tair, Swdown):
 
     return Rnet
 
-def gap_fill(df, col):
+def gap_fill(df, col, interpolate=True):
     non_nans = df[col][~df[col].apply(np.isnan)]
     start, end = non_nans.index[0], non_nans.index[-1]
-    df[col].loc[start:end] = df[col].loc[start:end].fillna(method='ffill')
+
+    if interpolate:
+        df[col] = df[col].interpolate()
+    else:
+        df[col].loc[start:end] = df[col].loc[start:end].fillna(method='ffill')
 
     return df
+
+def add_in_global_co2(co2_fname, df):
+
+    df_co2 = pd.read_csv(co2_fname, header=59, index_col=0, parse_dates=[0])
+    df_co2 = df_co2.drop('unc', axis=1)
+
+    df['CO2air'] = -999.9 # fix later
+    unique_yrs = np.unique(df.index.year)
+    for yr in unique_yrs:
+
+        years_co2 = df_co2[df_co2.index.year == yr].values[0][0]
+        #print(yr, years_co2)
+
+        idx = df.index[df.index.year==yr].tolist()
+        #df['CO2air'][idx] = years_co2
+
+        df.loc[idx, 'CO2air'] = years_co2
+
+    return df
+
 
 if __name__ == "__main__":
 
@@ -415,22 +439,9 @@ if __name__ == "__main__":
     lon = -0.8582
 
     ###
-    # Read the Alice flux data, fix up the dates...
+    # Read the Alice flux data, fix up the names
     ###
-
     fname = "../raw_data/2022/AliceHolt_2022_flux&met_ver2.csv"
-    #date_parse = lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
-
-    ##df = pd.read_csv(fname, index_col='DateTime', parse_dates=True,
-    #                 date_parser=date_parse)
-    #date_parse = lambda x: datetime.strptime(x, '%d-%m-%Y %H:%M:%S')
-    #df = pd.read_csv(fname, index_col='DateTime', parse_dates=True,
-    #                 date_parser=date_parse,
-    #                 usecols = ['DateTime','PAR_Den_Avg'])
-
-    # delete bad  column
-    #df = df.drop('Unnamed: 0', axis=1)
-
     df = pd.read_csv(fname, index_col='DateTime', parse_dates=True,
                      usecols = ['DateTime','air_temperature',
                                 'air_pressure', 'PAR_Den_Avg',
@@ -446,47 +457,41 @@ if __name__ == "__main__":
     df = df.rename(columns={'Rn_Avg': 'Rnet'})
     df = df.rename(columns={'WS_ms_Avg': 'Wind'})
 
-    print(df.Tair.max()-273.15)
+
     ###
     # Add in the global CO2
     ###
-    df_co2 = pd.read_csv("../raw_data/global_co2/co2_annmean_mlo.csv",
-                          header=59, index_col=0, parse_dates=[0])
-    df_co2 = df_co2.drop('unc', axis=1)
+    co2_fname = "../raw_data/global_co2/co2_annmean_mlo.csv"
+    df = add_in_global_co2(co2_fname, df)
 
-    df['CO2air'] = -999.9 # fix later
-    unique_yrs = np.unique(df.index.year)
-    for yr in unique_yrs:
-
-        years_co2 = df_co2[df_co2.index.year == yr].values[0][0]
-        #print(yr, years_co2)
-
-        idx = df.index[df.index.year==yr].tolist()
-        #df['CO2air'][idx] = years_co2
-
-        df.loc[idx, 'CO2air'] = years_co2
-
-    for col in df.columns:
-        print(col)
-
-
+    #for col in df.columns:
+    #    print(col)
 
     df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
 
-    # Drop the nan's in the file, oddly labelled e.g. "#na"
-    #df_ppt = df_ppt.replace('NaN', np.nan)
-    #df_ppt = df_ppt.replace('nan', np.nan)
-    #df_ppt = df_ppt.replace('#na', np.nan)
-    #df_ppt = df_ppt.dropna()
+    plt.plot(df['Tair'], "b.")
 
+    # Might use this for filling, work out the average hour of day
+    df_hod = df.groupby([df.index.year, df.index.hour]).agg(np.nanmean)
+
+
+
+    # Gap fill the air pressure, VPD
+    df = gap_fill(df, 'Psurf', interpolate=True)
+    df = gap_fill(df, 'VPD', interpolate=True)
+    df = gap_fill(df, 'Tair', interpolate=True)
     ###
     # fix the units
     ###
-    df = gap_fill(df, 'Psurf')
 
-    plt.plot(df['Psurf'], "r-")
+
+
+    plt.plot(df.Tair, "r-")
     plt.show()
     sys.exit()
+
+
+
 
     df['Psurf'] = np.where(np.isnan(df['Psurf']), 101.325 * kpa_2_pa, df['Psurf'])
 
