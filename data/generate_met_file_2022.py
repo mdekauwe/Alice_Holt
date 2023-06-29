@@ -518,8 +518,7 @@ if __name__ == "__main__":
     df['VPD'] = np.where(df['VPD'] < 0.05, 0.05, df['VPD'])
 
     # Add LW
-    df['Lwdown'] = estimate_lwdown(df.Tair.values+deg_2_kelvin,
-                                   df.RH.values/100.)
+    df['Lwdown'] = estimate_lwdown(df.Tair.values, df.RH.values/100.)
 
     #df['PAR'] = Rg_to_PPFD(df['Rg'])
     df['Swdown'] = df['PAR'] * PAR_2_SW
