@@ -469,40 +469,45 @@ if __name__ == "__main__":
 
     df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
 
-    plt.plot(df['Tair'], "b.")
+
+
+    ###
+    # Fill the gaps
+    ###
 
     # Might use this for filling, work out the average hour of day
-    df_hod = df.groupby([df.index.year, df.index.hour]).agg(np.nanmean)
+    #df_hod = df.groupby([df.index.year, df.index.hour]).agg(np.nanmean)
 
 
+    # Fill by the hour of day average
+    df = df.groupby(df.index.hour).fillna(method='ffill')
 
     # Gap fill the air pressure, VPD
-    df = gap_fill(df, 'Psurf', interpolate=True)
-    df = gap_fill(df, 'VPD', interpolate=True)
-    df = gap_fill(df, 'Tair', interpolate=True)
+    #df = gap_fill(df, 'Psurf', interpolate=True)
+    #df = gap_fill(df, 'VPD', interpolate=True)
+    #df = gap_fill(df, 'Tair', interpolate=True)
+
+    #window = 5
+    #df[ df.isnull() ] = np.nanmean( [ df.shift(x).values for x in
+    #                                 range(-48*window,48*(window+1),48) ], axis=0 )
+
+    #plt.plot(df.VPD, "r-")
+    #import datetime
+    #plt.xlim([datetime.date(2022, 5, 1), datetime.date(2022, 7, 29)])
+    #plt.show()
+    #sys.exit()
+
+
     ###
     # fix the units
     ###
-
-
-
-    plt.plot(df.Tair, "r-")
-    plt.show()
-    sys.exit()
-
-
-
-
-    df['Psurf'] = np.where(np.isnan(df['Psurf']), 101.325 * kpa_2_pa, df['Psurf'])
-
-
 
     df.loc[:, 'Tair'] -= deg_2_kelvin ## deg C
 
 
     df['Qair'] = convert_rh_to_qair(df['RH'], df['Tair'], df['Psurf'])
-    #df['VPD'] = qair_to_vpd(df['Qair'], df['Tair'], df['Psurf'])
 
+    #df['VPD'] = qair_to_vpd(df['Qair'], df['Tair'], df['Psurf'])
     df['VPD'] = np.where(df['VPD'] < 0.05, 0.05, df['VPD'])
 
     # Add LW
@@ -512,28 +517,6 @@ if __name__ == "__main__":
     #df['PAR'] = Rg_to_PPFD(df['Rg'])
     df['Swdown'] = df['PAR'] * PAR_2_SW
     #df['Rnet'] = simple_Rnet(df['Tair'], df['Swdown'])
-
-    #df = df[["Swdown", "Rainf", "Qair", "VPD", "Tair", "Wind", \
-    #         "Psurf", "Lwdown", "CO2air", "Rnet", "LE", "PAR"]]
-
-
-
-    vpd = df.VPD/1000.
-    vpd_mean = vpd.groupby(lambda x: (x.month, x.day)).mean().values
-    vpd_max = vpd.groupby(lambda x: (x.month, x.day)).max().values
-    vpd_min = vpd.groupby(lambda x: (x.month, x.day)).min().values
-    fig, ax1 = plt.subplots()
-
-    ax1.plot(vpd_mean, ls="-", color="darkgreen")
-    ax1.fill_between(np.arange(len(vpd_min)), vpd_min, vpd_max, color="green", alpha=.5)
-    ax1.set_ylabel("VPD (kPa)")
-
-
-    plt.show()
-
-    df = df.dropna()
-
-
 
 
     df.to_csv("alice_holt_met_data_2022.csv")
