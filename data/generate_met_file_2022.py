@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 """
-Generate a merged file from the Alice data. Currently I'm outputting a csv and
-a netcdf.
+Generate a CSV and netcdf met file for 2022
 
 TODO:
 =====
@@ -13,7 +12,7 @@ TODO:
 That's all folks.
 """
 __author__ = "Martin De Kauwe"
-__version__ = "1.0 (21.06.2022)"
+__version__ = "1.0 (29.06.2022)"
 __email__ = "mdekauwe@gmail.com"
 
 import sys
@@ -394,6 +393,13 @@ def simple_Rnet(tair, Swdown):
 
     return Rnet
 
+def gap_fill(df, col):
+    non_nans = df[col][~df[col].apply(np.isnan)]
+    start, end = non_nans.index[0], non_nans.index[-1]
+    df[col].loc[start:end] = df[col].loc[start:end].fillna(method='ffill')
+
+    return df
+
 if __name__ == "__main__":
 
     #hpa_2_kpa = 0.1
@@ -476,8 +482,11 @@ if __name__ == "__main__":
     ###
     # fix the units
     ###
+    df = gap_fill(df, 'Psurf')
 
-
+    plt.plot(df['Psurf'], "r-")
+    plt.show()
+    sys.exit()
 
     df['Psurf'] = np.where(np.isnan(df['Psurf']), 101.325 * kpa_2_pa, df['Psurf'])
 
