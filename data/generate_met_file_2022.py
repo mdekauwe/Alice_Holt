@@ -510,7 +510,8 @@ if __name__ == "__main__":
     ###
     # fix the units
     ###
-    df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
+    #df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
+    df.loc[:, 'Rainf'] /= 1800 ## mm/sec
 
     df['Qair'] = convert_rh_to_qair(df['RH'], df['Tair'], df['Psurf'])
 
