@@ -481,10 +481,14 @@ if __name__ == "__main__":
     # First gap fill the rainfall data with 0
     df['Rainf'] = df['Rainf'].fillna(0)
 
+    # Account for the very, very low wind speeds as these are values but bunk
+    # So, set it so we can then gap fill
+    df.Wind = np.where(df.Wind < 0.1, np.nan, df.Wind)
+
 
     # Fill by the hour of day average
     df = df.groupby(df.index.hour).fillna(method='ffill')
-
+    
     # Gap fill the air pressure, VPD
     #df = gap_fill(df, 'Psurf', interpolate=True)
     #df = gap_fill(df, 'VPD', interpolate=True)
