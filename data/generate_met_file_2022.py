@@ -467,7 +467,7 @@ if __name__ == "__main__":
     #for col in df.columns:
     #    print(col)
 
-    df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
+
 
 
 
@@ -477,6 +477,9 @@ if __name__ == "__main__":
 
     # Might use this for filling, work out the average hour of day
     #df_hod = df.groupby([df.index.year, df.index.hour]).agg(np.nanmean)
+
+    # First gap fill the rainfall data with 0
+    df['Rainf'] = df['Rainf'].fillna(0)
 
 
     # Fill by the hour of day average
@@ -501,9 +504,7 @@ if __name__ == "__main__":
     ###
     # fix the units
     ###
-
-    df.loc[:, 'Tair'] -= deg_2_kelvin ## deg C
-
+    df.loc[:, 'Rainf'] /= (48 * 1800) ## mm/sec
 
     df['Qair'] = convert_rh_to_qair(df['RH'], df['Tair'], df['Psurf'])
 
