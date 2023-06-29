@@ -33,7 +33,7 @@ df.Tair -= 273.15
 df.SWdown *= 2.3
 
 
-df = df.resample("D").agg("mean")
+#df = df.resample("D").agg("mean")
 
 
 fig = plt.figure(figsize=(15,10))
@@ -68,11 +68,13 @@ for a, v in zip(axes, vars_to_keep):
     #a.plot(df2[v].index.to_pydatetime(), df2[v].rolling(window=7).mean(), c=colours[2],
     #       lw=1.5, ls="-", label="cable", alpha=0.8)
 
-    a.plot(df[v].index.to_pydatetime(), df[v].rolling(window=7).mean(), c=colours[1],
+    #a.plot(df[v].index.to_pydatetime(), df[v].rolling(window=7).mean(), c=colours[1],
+    #       lw=1.5, ls="-", label="narclim")
+    a.plot(df[v].index, df[v], c=colours[1],
            lw=1.5, ls="-", label="narclim")
 
 fig.autofmt_xdate()
 #for a in axes:
-#    a.set_xlim([datetime.date(1992,1,1), datetime.date(1993, 1, 1)])
+#    a.set_xlim([datetime.date(2022,7,1), datetime.date(2022, 9, 1)])
 
 plt.show()
