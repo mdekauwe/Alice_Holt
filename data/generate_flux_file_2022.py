@@ -159,6 +159,13 @@ def create_netcdf(lat, lon, df, out_fname):
     Qle.long_name = "Latent Heat Flux"
     Qle.CF_name = "Latent Heat Flux"
 
+    SWC_10_1 = f.createVariable('SWC_10_1', 'f8', ('time', 'y', 'x',))
+    SWC_10_2 = f.createVariable('SWC_10_2', 'f8', ('time', 'y', 'x',))
+    SWC_20_1 = f.createVariable('SWC_20_1', 'f8', ('time', 'y', 'x',))
+    SWC_20_2 = f.createVariable('SWC_20_2', 'f8', ('time', 'y', 'x',))
+    SWC_50_1 = f.createVariable('SWC_50_1', 'f8', ('time', 'y', 'x',))
+    SWC_50_2 = f.createVariable('SWC_50_2', 'f8', ('time', 'y', 'x',))
+
     # write data to file
     x[:] = ndim
     y[:] = ndim
@@ -176,6 +183,14 @@ def create_netcdf(lat, lon, df, out_fname):
     LWdown[:,0,0] = df.Lwdown.values.reshape(n_timesteps, ndim, ndim)
     CO2air[:,0,0,0] = df.CO2air.values.reshape(n_timesteps, ndim, ndim, ndim)
     Qle[:,0,0] = df.LE.values.reshape(n_timesteps, ndim, ndim)
+    SWC_10_1[:,0,0] = df['SWC_010_1_Avg'].values.reshape(n_timesteps, ndim, ndim)
+    SWC_10_2[:,0,0] = df['SWC_010_2_Avg'].values.reshape(n_timesteps, ndim, ndim)
+    SWC_20_1[:,0,0] = df['SWC_020_1_Avg'].values.reshape(n_timesteps, ndim, ndim)
+    SWC_20_2[:,0,0] = df['SWC_020_2_Avg'].values.reshape(n_timesteps, ndim, ndim)
+    SWC_50_1[:,0,0] = df['SWC_050_1_Avg'].values.reshape(n_timesteps, ndim, ndim)
+    SWC_50_2[:,0,0] = df['SWC_050_2_Avg'].values.reshape(n_timesteps, ndim, ndim)
+
+
 
     # Height from Wilkinson, M., Eaton, E. L., Broadmeadow, M. S. J., and
     # Morison, J. I. L.: Inter-annual variation of carbon uptake by a
@@ -454,7 +469,10 @@ if __name__ == "__main__":
                      usecols = ['DateTime','air_temperature',
                                 'air_pressure', 'PAR_Den_Avg',
                                 'Rn_Avg', 'u*', 'Rain_mm_Tot',
-                                'VPD', 'LE', 'RH','WS_ms_Avg'])
+                                'VPD', 'LE', 'RH','WS_ms_Avg',
+                                'SWC_010_1_Avg', 'SWC_010_2_Avg',
+                                'SWC_020_1_Avg', 'SWC_020_2_Avg',
+                                'SWC_050_1_Avg', 'SWC_050_2_Avg'])
 
     df = df.rename(columns={'Rain_mm_Tot': 'Rainf'})
     df = df.rename(columns={'air_pressure': 'Psurf'})
