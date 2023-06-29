@@ -284,15 +284,17 @@ def convert_rh_to_qair(rh, tair, press):
     Params:
     -------
     tair : float
-        air temperature [deg C]
+        air temperature [K]
     press : float
         air pressure [Pa]
     rh : float
         relative humidity [%]
     """
 
+    tc = tair - 273.15
+
     # Sat vapour pressure in Pa
-    esat = calc_esat(tair)
+    esat = calc_esat(tc)
 
     # Specific humidity at saturation:
     ws = 0.622 * esat / (press - esat)
@@ -488,7 +490,7 @@ if __name__ == "__main__":
 
     # Fill by the hour of day average
     df = df.groupby(df.index.hour).fillna(method='ffill')
-    
+
     # Gap fill the air pressure, VPD
     #df = gap_fill(df, 'Psurf', interpolate=True)
     #df = gap_fill(df, 'VPD', interpolate=True)
