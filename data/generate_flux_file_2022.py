@@ -153,6 +153,12 @@ def create_netcdf(lat, lon, df, out_fname):
     za_uv.missing_value = -9999.
     za_uv.long_name = "level of lowest atmospheric model layer"
 
+    Qle = f.createVariable('Qle', 'f8', ('time', 'y', 'x',))
+    Qle.units = "W/m^2"
+    Qle.missing_value = -9999.
+    Qle.long_name = "Latent Heat Flux"
+    Qle.CF_name = "Latent Heat Flux"
+
     # write data to file
     x[:] = ndim
     y[:] = ndim
@@ -169,7 +175,7 @@ def create_netcdf(lat, lon, df, out_fname):
     PSurf[:,0,0] = df.Psurf.values.reshape(n_timesteps, ndim, ndim)
     LWdown[:,0,0] = df.Lwdown.values.reshape(n_timesteps, ndim, ndim)
     CO2air[:,0,0,0] = df.CO2air.values.reshape(n_timesteps, ndim, ndim, ndim)
-
+    Qle[:,0,0] = df.LE.values.reshape(n_timesteps, ndim, ndim)
 
     # Height from Wilkinson, M., Eaton, E. L., Broadmeadow, M. S. J., and
     # Morison, J. I. L.: Inter-annual variation of carbon uptake by a
@@ -490,8 +496,6 @@ if __name__ == "__main__":
 
     # Fill by the hour of day average
     df = df.groupby(df.index.hour).fillna(method='ffill')
-    df = df.groupby(df.index.hour).fillna(method='bfill')
-
 
     # Gap fill the air pressure, VPD
     #df = gap_fill(df, 'Psurf', interpolate=True)
@@ -527,9 +531,5 @@ if __name__ == "__main__":
     df['Swdown'] = df['PAR'] * PAR_2_SW
     #df['Rnet'] = simple_Rnet(df['Tair'], df['Swdown'])
 
-    df.to_csv("alice_holt_met_data_2022.csv")
-
-    out_fname = "alice_holt_met_2022.nc"
+    out_fname = "alice_holt_flux_2022.nc"
     create_netcdf(lat, lon, df, out_fname)
-
-    
