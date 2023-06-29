@@ -440,6 +440,12 @@ if __name__ == "__main__":
     lat = 51.1536
     lon = -0.8582
 
+    #fname = "../raw_data/2022/AliceHolt_2022_flux&met_ver2.csv"
+    #df = pd.read_csv(fname, index_col='DateTime', parse_dates=True)
+    #for col in df.columns:
+    #    print(col)
+    #sys.exit()
+
     ###
     # Read the Alice flux data, fix up the names
     ###
@@ -465,13 +471,6 @@ if __name__ == "__main__":
     ###
     co2_fname = "../raw_data/global_co2/co2_annmean_mlo.csv"
     df = add_in_global_co2(co2_fname, df)
-
-    #for col in df.columns:
-    #    print(col)
-
-
-
-
 
     ###
     # Fill the gaps
@@ -531,5 +530,3 @@ if __name__ == "__main__":
 
     out_fname = "alice_holt_met_2022.nc"
     create_netcdf(lat, lon, df, out_fname)
-
-    
