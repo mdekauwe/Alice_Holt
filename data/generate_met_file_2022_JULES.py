@@ -101,35 +101,45 @@ def create_netcdf(lat, lon, df, out_fname):
     SWdown.long_name = "Surface incident shortwave radiation"
     SWdown.CF_name = "surface_downwelling_shortwave_flux_in_air"
 
-    Tair = f.createVariable('Tair', 'f8', ('time', 'z', 'y', 'x',))
+    # CABLE
+    #Tair = f.createVariable('Tair', 'f8', ('time', 'z', 'y', 'x',))
+    # JULES
+    Tair = f.createVariable('Tair', 'f8', ('time', 'y', 'x',))
     Tair.units = "K"
     Tair.missing_value = -9999.
     Tair.long_name = "Near surface air temperature"
     Tair.CF_name = "surface_temperature"
 
-    Rainf = f.createVariable('Rainf', 'f8', ('time', 'y', 'x',))
-    Rainf.units = "mm/s"
-    Rainf.missing_value = -9999.
-    Rainf.long_name = "Rainfall rate"
-    Rainf.CF_name = "precipitation_flux"
+    #Rainf = f.createVariable('Rainf', 'f8', ('time', 'y', 'x',))
+    #Rainf.units = "mm/s"
+    #Rainf.missing_value = -9999.
+    #Rainf.long_name = "Rainfall rate"
+    #Rainf.CF_name = "precipitation_flux"
 
-    Qair = f.createVariable('Qair', 'f8', ('time', 'z', 'y', 'x',))
+    Precip = f.createVariable('Precip', 'f8', ('time', 'y', 'x',))
+    Precip.units = "mm/s"
+    Precip.missing_value = -9999.
+    Precip.long_name = "Rainfall rate"
+    Precip.CF_name = "precipitation_flux"
+
+    Qair = f.createVariable('Qair', 'f8', ('time', 'y', 'x',))
     Qair.units = "kg/kg"
     Qair.missing_value = -9999.
     Qair.long_name = "Near surface specific humidity"
     Qair.CF_name = "surface_specific_humidity"
 
-    Wind = f.createVariable('Wind', 'f8', ('time', 'z', 'y', 'x',))
+    #Wind = f.createVariable('Wind', 'f8', ('time', 'z', 'y', 'x',))
+    Wind = f.createVariable('Wind', 'f8', ('time', 'y', 'x',))
     Wind.units = "m/s"
     Wind.missing_value = -9999.
     Wind.long_name = "Scalar windspeed" ;
     Wind.CF_name = "wind_speed"
 
-    PSurf = f.createVariable('PSurf', 'f8', ('time', 'y', 'x',))
-    PSurf.units = "Pa"
-    PSurf.missing_value = -9999.
-    PSurf.long_name = "Surface air pressure"
-    PSurf.CF_name = "surface_air_pressure"
+    Psurf = f.createVariable('Psurf', 'f8', ('time', 'y', 'x',))
+    Psurf.units = "Pa"
+    Psurf.missing_value = -9999.
+    Psurf.long_name = "Surface air pressure"
+    Psurf.CF_name = "surface_air_pressure"
 
     LWdown = f.createVariable('LWdown', 'f8', ('time', 'y', 'x',))
     LWdown.units = "W/m^2"
@@ -162,11 +172,16 @@ def create_netcdf(lat, lon, df, out_fname):
     longitude[:] = lon
 
     SWdown[:,0,0] = df.Swdown.values.reshape(n_timesteps, ndim, ndim)
-    Rainf[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
-    Qair[:,0,0,0] = df.Qair.values.reshape(n_timesteps, ndim, ndim, ndim)
-    Tair[:,0,0,0] = df.Tair.values.reshape(n_timesteps, ndim, ndim, ndim)
-    Wind[:,0,0,0] = df.Wind.values.reshape(n_timesteps, ndim, ndim, ndim)
-    PSurf[:,0,0] = df.Psurf.values.reshape(n_timesteps, ndim, ndim)
+    #Rainf[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
+    Precip[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
+    Qair[:,0,0] = df.Qair.values.reshape(n_timesteps, ndim, ndim)
+    # CABLE
+    #Tair[:,0,0,0] = df.Tair.values.reshape(n_timesteps, ndim, ndim, ndim)
+    # JULES
+    Tair[:,0,0] = df.Tair.values.reshape(n_timesteps, ndim, ndim)
+    #Wind[:,0,0,0] = df.Wind.values.reshape(n_timesteps, ndim, ndim, ndim)
+    Wind[:,0,0] = df.Wind.values.reshape(n_timesteps, ndim, ndim)
+    Psurf[:,0,0] = df.Psurf.values.reshape(n_timesteps, ndim, ndim)
     LWdown[:,0,0] = df.Lwdown.values.reshape(n_timesteps, ndim, ndim)
     CO2air[:,0,0,0] = df.CO2air.values.reshape(n_timesteps, ndim, ndim, ndim)
 
