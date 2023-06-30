@@ -528,5 +528,5 @@ if __name__ == "__main__":
 
     df.to_csv("alice_holt_met_data_2022.csv")
 
-    out_fname = "alice_holt_met_2022.nc"
+    out_fname = "UK-Ham_2002-2003_Met.nc"
     create_netcdf(lat, lon, df, out_fname)
