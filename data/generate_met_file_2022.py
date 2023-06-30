@@ -107,11 +107,17 @@ def create_netcdf(lat, lon, df, out_fname):
     Tair.long_name = "Near surface air temperature"
     Tair.CF_name = "surface_temperature"
 
-    Rainf = f.createVariable('Rainf', 'f8', ('time', 'y', 'x',))
-    Rainf.units = "mm/s"
-    Rainf.missing_value = -9999.
-    Rainf.long_name = "Rainfall rate"
-    Rainf.CF_name = "precipitation_flux"
+    #Rainf = f.createVariable('Rainf', 'f8', ('time', 'y', 'x',))
+    #Rainf.units = "mm/s"
+    #Rainf.missing_value = -9999.
+    #Rainf.long_name = "Rainfall rate"
+    #Rainf.CF_name = "precipitation_flux"
+
+    Precip = f.createVariable('Precip', 'f8', ('time', 'y', 'x',))
+    Precip.units = "mm/s"
+    Precip.missing_value = -9999.
+    Precip.long_name = "Rainfall rate"
+    Precip.CF_name = "precipitation_flux"
 
     Qair = f.createVariable('Qair', 'f8', ('time', 'z', 'y', 'x',))
     Qair.units = "kg/kg"
@@ -162,7 +168,8 @@ def create_netcdf(lat, lon, df, out_fname):
     longitude[:] = lon
 
     SWdown[:,0,0] = df.Swdown.values.reshape(n_timesteps, ndim, ndim)
-    Rainf[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
+    #Rainf[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
+    Precip[:,0,0] = df.Rainf.values.reshape(n_timesteps, ndim, ndim)
     Qair[:,0,0,0] = df.Qair.values.reshape(n_timesteps, ndim, ndim, ndim)
     Tair[:,0,0,0] = df.Tair.values.reshape(n_timesteps, ndim, ndim, ndim)
     Wind[:,0,0,0] = df.Wind.values.reshape(n_timesteps, ndim, ndim, ndim)
