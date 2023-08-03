@@ -44,7 +44,7 @@ def create_netcdf(lat, lon, df, out_fname):
     # account for them in the date index. We really need to gapfill...
     start_date = df.index[0]
     end_date = df.index[-1]
-
+    
     times = []
     for i in range(len(df)):
         secs = (df.index[i] - start_date).total_seconds()
